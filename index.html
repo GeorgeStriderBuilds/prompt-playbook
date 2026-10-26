@@ -19,34 +19,35 @@ button:active{transform:scale(.97)} ul{line-height:1.6;padding-left:20px}
 <body>
 <h1>Prompt Playbook</h1>
 <p class="sub">George &amp; Strider. Tap a template to copy it. This page is maintained by a daily Tier 3 review: changes are logged, not silently made.</p>
+<input id="search" placeholder="Search templates, e.g. shopping, social" oninput="filterCards()" style="width:100%;box-sizing:border-box;padding:10px;border-radius:10px;background:#120e1d;color:#fff;border:1px solid #3d2f66;margin-bottom:14px">
 
 <div class="card"><span class="tier">Tier 1</span><h2>Research</h2>
 <pre id="t1">Goal: [what you need to decide]
 Constraints: [timeframe, sources to prefer, what to exclude]
 Check: cite sources, separate verified facts from estimates, say what is still unverified.
 Stop: if no reliable source exists, say so instead of filling the gap.</pre>
-<button onclick="copy('t1')">Copy template</button></div>
+<button onclick="copy('t1',this)">Copy template</button></div>
 
 <div class="card"><span class="tier">Tier 2</span><h2>Shopping</h2>
 <pre id="t2">Goal: [item, use case]
 Hard limits: [budget, size/fit dimensions, must-haves, must-not-haves]
 Check: verify each limit against the listing or spec sheet, and name what the listing does NOT publish.
 Stop: do not buy, and do not contact a seller, without a fresh yes naming the exact item.</pre>
-<button onclick="copy('t2')">Copy template</button></div>
+<button onclick="copy('t2',this)">Copy template</button></div>
 
 <div class="card"><span class="tier">Tier 2</span><h2>Build an app</h2>
 <pre id="t3">Goal: [what it does, who it is for]
 Constraints: [single file if possible, public or private, no signup, no upload if that matters]
 Check: show it working before publishing, test on phone size, check the live URL after upload.
 Stop: no monetization, ads, or extra features unless approved separately.</pre>
-<button onclick="copy('t3')">Copy template</button></div>
+<button onclick="copy('t3',this)">Copy template</button></div>
 
 <div class="card"><span class="tier">Tier 3</span><h2>Social post</h2>
 <pre id="t4">Goal: [which app or idea, which platform first]
 Rules: [Threads first if Instagram is on standby, one topic tag on Threads, "Link in bio." on Instagram, no em dashes, photo reuse cap of 2]
 Check: show the exact caption and image before posting, confirm the link is clickable where it should be.
 Stop: no more than [N] feed posts that day, skip a platform entirely on any warning.</pre>
-<button onclick="copy('t4')">Copy template</button></div>
+<button onclick="copy('t4',this)">Copy template</button></div>
 
 <div class="card"><span class="tier">Tier 4</span><h2>Recurring job</h2>
 <pre id="t5">Goal: [what the job checks or does]
@@ -54,7 +55,7 @@ Schedule: [time, timezone]
 Rules: [what it may do, what it may never do, safety stop on warnings]
 Output: [proposal first / report only / silent on quiet days]
 Stop: implementation only after approval in chat, never from the job itself.</pre>
-<button onclick="copy('t5')">Copy template</button></div>
+<button onclick="copy('t5',this)">Copy template</button></div>
 
 <div class="card"><h2>Rules that travel</h2>
 <ul>
@@ -72,7 +73,8 @@ Stop: implementation only after approval in chat, never from the job itself.</pr
 <button onclick="saveMy()">Save my prompt</button>
 <ul id="mylist"></ul></div>
 <script>
-function copy(id){var t=document.getElementById(id).innerText;navigator.clipboard.writeText(t).then(function(){alert('Copied.');});}
+function copy(id,btn){var t=document.getElementById(id).innerText;navigator.clipboard.writeText(t).then(function(){if(btn){var old=btn.textContent;btn.textContent='Copied!';setTimeout(function(){btn.textContent=old;},1500);}});}
+function filterCards(){var q=(document.getElementById('search').value||'').toLowerCase();document.querySelectorAll('.card').forEach(function(c){if(c.querySelector('pre')){c.style.display=c.innerText.toLowerCase().includes(q)?'':'none';}});}
 var my=JSON.parse(localStorage.getItem('pp-my')||'[]');
 function renderMy(){document.getElementById('mylist').innerHTML=my.map(function(p,i){return '<li>'+p.replace(/</g,'&lt;')+' <button onclick="delMy('+i+')">Delete</button></li>';}).join('')||'<li class="note">No saved prompts yet.</li>';}
 function saveMy(){var v=document.getElementById('myprompt').value.trim();if(!v)return;my.unshift(v);localStorage.setItem('pp-my',JSON.stringify(my));document.getElementById('myprompt').value='';renderMy();}
