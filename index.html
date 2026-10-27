@@ -57,6 +57,13 @@ Output: [proposal first / report only / silent on quiet days]
 Stop: implementation only after approval in chat, never from the job itself.</pre>
 <button onclick="copy('t5',this)">Copy template</button></div>
 
+<div class="card"><h2>Prompt health check</h2>
+<p class="note">Paste any prompt below. This is a simple word check, not AI judgment. It looks for the four parts your best prompts have: a goal, a constraint, a check step, and a stop rule. It cannot tell if a prompt is clever, only if those four parts are present.</p>
+<textarea id="healthInput" rows="5" style="width:100%;box-sizing:border-box;border-radius:10px;padding:10px;background:#120e1d;color:#fff;border:1px solid #3d2f66" placeholder="Paste your prompt here, for example: Find a jacket under $250. Check the sleeve length. Do not buy without my yes."></textarea>
+<button onclick="healthCheck()">Check my prompt</button>
+<button onclick="document.getElementById('healthInput').value=document.getElementById('t2').innerText;healthCheck();" style="background:#2a2f45">Try it with the Shopping template</button>
+<div id="healthResult" class="note" style="margin-top:12px"></div></div>
+
 <div class="card"><h2>Rules that travel</h2>
 <ul>
 <li>Draft before publish.</li>
@@ -71,6 +78,10 @@ Stop: implementation only after approval in chat, never from the job itself.</pr
 <p class="note">Save your own prompts here. They stay in this browser only, no upload.</p>
 <textarea id="myprompt" rows="4" style="width:100%;box-sizing:border-box;border-radius:10px;padding:10px;background:#120e1d;color:#fff;border:1px solid #3d2f66" placeholder="Paste a prompt that worked for you"></textarea>
 <button onclick="saveMy()">Save my prompt</button>
+<button onclick="exportMy()" style="background:#2a2f45">Export my prompts</button>
+<button onclick="document.getElementById('importFile').click()" style="background:#2a2f45">Import my prompts</button>
+<input id="importFile" type="file" accept=".json,application/json" style="display:none" onchange="importMy(event)">
+<p class="note">Export downloads your saved prompts as a JSON file you can keep or move to another device. Import reads that same file back in and adds any prompts you do not already have. Nothing is uploaded anywhere.</p>
 <ul id="mylist"></ul></div>
 <script>
 function copy(id,btn){var t=document.getElementById(id).innerText;navigator.clipboard.writeText(t).then(function(){if(btn){var old=btn.textContent;btn.textContent='Copied!';setTimeout(function(){btn.textContent=old;},1500);}});}
@@ -79,6 +90,18 @@ var my=JSON.parse(localStorage.getItem('pp-my')||'[]');
 function renderMy(){document.getElementById('mylist').innerHTML=my.map(function(p,i){return '<li>'+p.replace(/</g,'&lt;')+' <button onclick="delMy('+i+')">Delete</button></li>';}).join('')||'<li class="note">No saved prompts yet.</li>';}
 function saveMy(){var v=document.getElementById('myprompt').value.trim();if(!v)return;my.unshift(v);localStorage.setItem('pp-my',JSON.stringify(my));document.getElementById('myprompt').value='';renderMy();}
 function delMy(i){my.splice(i,1);localStorage.setItem('pp-my',JSON.stringify(my));renderMy();}
+function exportMy(){var data={app:'prompt-playbook',version:1,exported:new Date().toISOString(),myPrompts:my};var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='prompt-playbook-my-prompts.json';a.click();URL.revokeObjectURL(a.href);}
+function importMy(ev){var f=ev.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var d=JSON.parse(r.result);var list=Array.isArray(d)?d:d.myPrompts;if(!Array.isArray(list))throw new Error('bad file');var added=0;list.forEach(function(p){if(typeof p==='string'&&p.trim()&&my.indexOf(p)===-1){my.push(p);added++;}});localStorage.setItem('pp-my',JSON.stringify(my));renderMy();alert('Imported '+added+' new prompt(s).');}catch(e){alert('That file could not be imported. It needs to be a Prompt Playbook export, a JSON list of prompts.');}ev.target.value='';};r.readAsText(f);}
+function healthCheck(){var t=(document.getElementById('healthInput').value||'').trim();var low=t.toLowerCase();if(!t){document.getElementById('healthResult').innerHTML='Paste a prompt first.';return;}
+var goal=/\bgoal\b|^(build|write|find|post|check|create|compare|plan|draft|make|search|list|improve|review)\b/.test(low);
+var constraint=/\bconstraint|hard limit|budget|under \$|max |at most|only |must |must-not|no |size|limit\b/.test(low);
+var check=/\bcheck\b|verify|show me|before |confirm|cite|read back|double-check/.test(low);
+var stop=/\bstop\b|do not|never|skip|unless|only if|without my|do not buy|do not post/.test(low);
+var parts=[['Goal',goal,'Add one clear goal line, starting Goal: what you need done.'],['Constraint',constraint,'Add a hard limit, for example budget, size, or a must-not-have.'],['Check step',check,'Add how you will check it, for example show it to me before posting, or verify it against the listing.'],['Stop rule',stop,'Add what must never happen, for example do not buy without my yes, or skip a platform on any warning.']];
+var score=parts.filter(function(p){return p[1];}).length;
+var html='<strong>Score: '+score+' / 4</strong><ul>'+parts.map(function(p){return '<li>'+(p[1]?'✓ ':'✗ ')+p[0]+(p[1]?'': ' — '+p[2])+'</li>';}).join('')+'</ul>';
+if(score===4)html+='All four parts are present. That does not guarantee a good result, but it matches the shape of your strongest prompts.';
+document.getElementById('healthResult').innerHTML=html;}
 renderMy();
 </script>
 </body>
