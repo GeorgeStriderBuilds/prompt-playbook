@@ -20,14 +20,36 @@ input[type=text],textarea{width:100%;box-sizing:border-box;border-radius:10px;pa
 .example{background:#1a1430;border-radius:10px;padding:12px;font-size:14px;line-height:1.5}
 .ledger-row{border-top:1px solid #3d2f66;padding:10px 0}
 .ledger-row:first-child{border-top:0}
+.mode-btn.active{background:#22c55e;color:#111}
+.wizard{background:#1e2a1a;border:2px solid #22c55e}
+body.beginner .template-card .fill,body.beginner .template-card .preview,body.beginner .template-card .example,body.beginner .template-card h3{display:none}
+body.beginner .template-card .use-btn{display:inline-block}
+.wizard-step{font-size:13px;color:#c9bfe0}
+.big{font-size:18px;padding:14px 20px}
 </style>
 </head>
 <body>
 <h1>Prompt Playbook</h1>
 <p class="sub">George &amp; Strider. Fill in a template, preview it live, copy it, and check its health. No signup, no upload, everything stays in this browser. This page is maintained by a daily Tier 3 review: changes are logged, not silently made.</p>
 <input id="search" placeholder="Search templates, e.g. shopping, social" oninput="filterCards()" style="width:100%;box-sizing:border-box;padding:10px;border-radius:10px;background:#120e1d;color:#fff;border:1px solid #3d2f66;margin-bottom:14px">
+<div class="card"><h2>How do you want to use this?</h2>
+<p class="note">Beginner hides the details and walks you through one prompt at a time. Expert shows every template in full, as before.</p>
+<button id="modeBeginner" class="mode-btn" onclick="setMode('beginner')">Beginner: guide me</button>
+<button id="modeExpert" class="mode-btn" onclick="setMode('expert')">Expert: show everything</button>
+<button onclick="surpriseMe()" class="big">🎲 Surprise me: pick a prompt for me</button>
+</div>
+<div class="card wizard" id="wizard" style="display:none"><h2 id="wizardTitle">Guided prompt</h2>
+<p id="wizardTier" class="note"></p>
+<p id="wizardStep" class="wizard-step"></p>
+<p id="wizardQuestion" style="font-size:18px"></p>
+<input id="wizardInput" type="text" placeholder="Type in plain words">
+<div id="wizardFinal" style="display:none"><div id="wizardPreview" class="preview"></div><div id="wizardHealth" class="note" style="margin-top:10px"></div>
+<button onclick="copyWizard()">Copy this prompt</button></div>
+<div><button id="wizardBack" onclick="wizardBack()">Back</button><button id="wizardNext" onclick="wizardNext()">Next</button><button onclick="surpriseMe()" style="background:#2a2f45">Surprise me again</button></div>
+</div>
 
 <div class="card template-card" data-proof="Research"><span class="tier">Tier 1</span><h2>Research</h2>
+<p class="plain note">In plain words: ask one question well, and make sure the answer can be checked.</p>
 <pre class="template" id="t1">Goal: {{decision}}
 Constraints: {{timeframe}}, sources to prefer: {{sources}}, exclude: {{exclude}}
 Check: cite sources, separate verified facts from estimates, say what is still unverified.
@@ -35,9 +57,11 @@ Stop: if no reliable source exists, say so instead of filling the gap.
 Output: {{outputFormat}} — success means: {{success}}</pre>
 <div class="fill"></div><div class="preview"></div>
 <button onclick="copyFilled('t1',this)">Copy filled prompt</button><button onclick="copy('t1',this)" style="background:#2a2f45">Copy blank template</button>
+<button class="use-btn" onclick="startWizard('t1')">Use this template, guided</button>
 <h3>Worked example</h3><p class="example">Goal: decide whether to attend GitHub Universe virtually or in person. Constraints: Oct 28-29, 2026, official GitHub sources preferred, exclude paid-pass hype. Check: cite the official schedule and price, separate confirmed prices from estimates. Stop: do not register or pay without my yes. Output: a short comparison — success means I can choose virtual or in-person from it.</p></div>
 
 <div class="card template-card" data-proof="Shopping"><span class="tier">Tier 2</span><h2>Shopping</h2>
+<p class="plain note">In plain words: buy something once, with the limits and fit checked first.</p>
 <pre class="template" id="t2">Goal: {{item}} for {{useCase}}
 Hard limits: budget {{budget}}, size/fit {{fit}}, must-haves: {{mustHaves}}, must-not-haves: {{mustNotHaves}}
 Check: verify each limit against the listing or spec sheet, and name what the listing does NOT publish.
@@ -45,9 +69,11 @@ Stop: do not buy, and do not contact a seller, without a fresh yes naming the ex
 Output: {{outputFormat}} — success means: {{success}}</pre>
 <div class="fill"></div><div class="preview"></div>
 <button onclick="copyFilled('t2',this)">Copy filled prompt</button><button onclick="copy('t2',this)" style="background:#2a2f45">Copy blank template</button>
+<button class="use-btn" onclick="startWizard('t2')">Use this template, guided</button>
 <h3>Worked example</h3><p class="example">Goal: a motorcycle jacket for riding in the mid-to-high 60s. Hard limits: budget under $250, CE Level 1, Large torso with long arms, wind protection, must-not-haves: perforations. Check: verify sleeve length center-back-neck to wrist and back-pocket size against the 17.1 inch D3O Viper insert, and name what the listing does NOT publish. Stop: do not buy without a fresh yes naming the exact item. Output: a shortlist with dimensions checked — success means I can pick one without guessing on fit.</p></div>
 
 <div class="card template-card" data-proof="Build an app"><span class="tier">Tier 2</span><h2>Build an app</h2>
+<p class="plain note">In plain words: get an app built, checked live, and published without extras sneaking in.</p>
 <pre class="template" id="t3">Goal: {{appIdea}} for {{whoFor}}
 Constraints: single file if possible, {{visibility}}, no signup, no upload if that matters
 Check: show it working before publishing, test on phone size, check the live URL after upload, verify the live result (links, counts, versions) before calling it done.
@@ -55,9 +81,11 @@ Stop: no monetization, ads, extra features, or merging apps unless approved sepa
 Output: {{outputFormat}} — success means: {{success}}</pre>
 <div class="fill"></div><div class="preview"></div>
 <button onclick="copyFilled('t3',this)">Copy filled prompt</button><button onclick="copy('t3',this)" style="background:#2a2f45">Copy blank template</button>
+<button class="use-btn" onclick="startWizard('t3')">Use this template, guided</button>
 <h3>Worked example</h3><p class="example">Goal: Sound Lab, a 16-step beat maker for phone browsers. Constraints: single file, public, no signup, no upload. Check: show it working before publishing, test on phone size, check the live URL after upload, verify the live result before calling it done. Stop: no monetization, ads, or extra features unless approved separately. Output: a live Pages link — success means I can play a pattern on my phone.</p></div>
 
 <div class="card template-card" data-proof="Social post"><span class="tier">Tier 3</span><h2>Social post</h2>
+<p class="plain note">In plain words: post once, approved by you first, without spamming anyone.</p>
 <pre class="template" id="t4">Goal: {{appOrIdea}} on {{platformFirst}}
 Rules: Threads first; via connector, never browser commenting; "Link in bio." on Instagram, no em dashes, photo reuse cap of 2; comments only as reply-backs or on followed/community accounts, each uniquely written and individually approved; Instagram comments by George himself or none
 Check: show the exact caption and image before posting, confirm the link is clickable where it should be.
@@ -65,9 +93,11 @@ Stop: max 1 feed post per platform per day, max 1-2 Threads comments per day hou
 Output: {{outputFormat}} — success means: {{success}}</pre>
 <div class="fill"></div><div class="preview"></div>
 <button onclick="copyFilled('t4',this)">Copy filled prompt</button><button onclick="copy('t4',this)" style="background:#2a2f45">Copy blank template</button>
+<button class="use-btn" onclick="startWizard('t4')">Use this template, guided</button>
 <h3>Worked example</h3><p class="example">Goal: Glitch Studio mirror post on Threads first. Rules: via connector, never browser commenting, no em dashes, photo reuse cap of 2, caption decisive, not indecisive. Check: show the exact caption and image before posting, confirm the link is clickable. Stop: max 1 feed post that day, skip a platform entirely on any warning. Output: one approved caption and image — success means I can approve it in one message and it goes out exactly as approved.</p></div>
 
 <div class="card template-card" data-proof="Recurring job"><span class="tier">Tier 4</span><h2>Recurring job</h2>
+<p class="plain note">In plain words: set a job once that checks something on a schedule and reports back.</p>
 <pre class="template" id="t5">Goal: {{jobTask}}
 Schedule: {{schedule}} {{timezone}}
 Rules: what it may do: {{mayDo}}; what it may never do: {{mayNeverDo}}; safety stop on warnings
@@ -75,6 +105,7 @@ Output: {{outputFormat}} — success means: {{success}}
 Stop: implementation only after approval in chat, never from the job itself.</pre>
 <div class="fill"></div><div class="preview"></div>
 <button onclick="copyFilled('t5',this)">Copy filled prompt</button><button onclick="copy('t5',this)" style="background:#2a2f45">Copy blank template</button>
+<button class="use-btn" onclick="startWizard('t5')">Use this template, guided</button>
 <h3>Worked example</h3><p class="example">Goal: check Glitch Studio and Ride Check for one genuinely useful improvement each. Schedule: daily 2:00pm America/New_York. Rules: what it may do: propose only; what it may never do: implement, upload, or change a repo; safety stop on any warning. Output: a proposal, report only — success means I can say yes or no to each item separately. Stop: implementation only after approval in chat, never from the job itself.</p></div>
 
 <div class="card"><h2>Prompt health check</h2>
@@ -127,6 +158,22 @@ document.querySelectorAll('.template-card').forEach(function(card){
   update();card._updatePreview=update;card._getFilled=function(){return preview.textContent;};
 });
 function copyFilled(id,btn){var card=document.getElementById(id).closest('.template-card');var t=card?card._getFilled():document.getElementById(id).innerText;navigator.clipboard.writeText(t).then(function(){if(btn){var old=btn.textContent;btn.textContent='Copied!';setTimeout(function(){btn.textContent=old;},1500);}});}
+function setMode(mode){localStorage.setItem('pp-mode',mode);document.body.classList.toggle('beginner',mode==='beginner');document.getElementById('modeBeginner').classList.toggle('active',mode==='beginner');document.getElementById('modeExpert').classList.toggle('active',mode==='expert');}
+var tierExplain={'Tier 1':'Tier 1: a simple question. No action, no risk.','Tier 2':'Tier 2: one job, with hard limits.','Tier 3':'Tier 3: you hand over judgment, but keep approval gates.','Tier 4':'Tier 4: a job that runs on a clock, not in chat.'};
+var wizardState={id:null,vars:[],step:0,values:{},lastId:null};
+function getTemplateInfo(id){var card=document.getElementById(id).closest('.template-card');var tier=card.querySelector('.tier').textContent;var name=card.querySelector('h2').textContent;var vars=[];var seen={};(document.getElementById(id).innerText.match(/\{\{[^}]+\}\}/g)||[]).forEach(function(v){var n=v.slice(2,-2);if(!seen[n]){seen[n]=1;vars.push(n);}});return {card:card,tier:tier,name:name,vars:vars};}
+function humanVar(v){return v.replace(/([A-Z])/g,' $1').replace(/^./,function(c){return c.toUpperCase();});}
+function startWizard(id){var info=getTemplateInfo(id);wizardState={id:id,vars:info.vars,step:0,values:{},lastId:id};document.getElementById('wizard').style.display='';renderWizard();document.getElementById('wizard').scrollIntoView({behavior:'smooth'});}
+function surpriseMe(){var ids=['t1','t2','t3','t4','t5'].filter(function(x){return x!==wizardState.lastId;});var id=ids[Math.floor(Math.random()*ids.length)];startWizard(id);}
+function renderWizard(){var info=getTemplateInfo(wizardState.id);document.getElementById('wizardTitle').textContent='Guided: '+info.name;document.getElementById('wizardTier').textContent=tierExplain[info.tier]||info.tier;
+if(wizardState.step<wizardState.vars.length){document.getElementById('wizardFinal').style.display='none';document.getElementById('wizardInput').style.display='';document.getElementById('wizardNext').textContent='Next';var v=wizardState.vars[wizardState.step];document.getElementById('wizardStep').textContent='Step '+(wizardState.step+1)+' of '+wizardState.vars.length+' — '+info.name;document.getElementById('wizardQuestion').textContent='What is the '+humanVar(v)+'? Type it in plain words.';document.getElementById('wizardInput').value=wizardState.values[v]||'';document.getElementById('wizardInput').placeholder=v;document.getElementById('wizardInput').focus();}
+else{var text=document.getElementById(wizardState.id).innerText;wizardState.vars.forEach(function(v){text=text.split('{{'+v+'}}').join(wizardState.values[v]||'['+v+']');});document.getElementById('wizardInput').style.display='none';document.getElementById('wizardStep').textContent='Done — check it, then copy it.';document.getElementById('wizardQuestion').textContent='Here is your finished prompt. The health check below is the same Goal, Constraint, Check, Stop check from the app.';document.getElementById('wizardFinal').style.display='';document.getElementById('wizardPreview').textContent=text;document.getElementById('wizardHealth').innerHTML=healthHtml(text);document.getElementById('wizardNext').textContent='Surprise me again';}}
+function wizardNext(){if(wizardState.step<wizardState.vars.length){var v=wizardState.vars[wizardState.step];wizardState.values[v]=document.getElementById('wizardInput').value.trim();wizardState.step++;renderWizard();}else{surpriseMe();}}
+function wizardBack(){if(wizardState.step>0){if(wizardState.step<wizardState.vars.length){var v=wizardState.vars[wizardState.step];wizardState.values[v]=document.getElementById('wizardInput').value.trim();}wizardState.step--;renderWizard();}}
+function copyWizard(){var t=document.getElementById('wizardPreview').textContent;navigator.clipboard.writeText(t).then(function(){alert('Copied!');});}
+function healthHtml(t){var low=t.toLowerCase();var goal=/\bgoal\b|^(build|write|find|post|check|create|compare|plan|draft|make|search|list|improve|review)\b/.test(low);var constraint=/\bconstraint|hard limit|budget|under \$|max |at most|only |must |must-not|no |size|limit\b/.test(low);var check=/\bcheck\b|verify|show me|before |confirm|cite|read back|double-check/.test(low);var stop=/\bstop\b|do not|never|skip|unless|only if|without my|do not buy|do not post/.test(low);var parts=[['Goal',goal],['Constraint',constraint],['Check step',check],['Stop rule',stop]];var score=parts.filter(function(p){return p[1];}).length;return '<strong>Health: '+score+' / 4</strong> — '+parts.map(function(p){return (p[1]?'✓ ':'✗ ')+p[0];}).join(', ');}
+setMode(localStorage.getItem('pp-mode')||'beginner');
+document.getElementById('wizardInput').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();wizardNext();}});
 var my=JSON.parse(localStorage.getItem('pp-my')||'[]');
 function renderMy(){document.getElementById('mylist').innerHTML=my.map(function(p,i){return '<li>'+p.replace(/</g,'&lt;')+' <button onclick="delMy('+i+')">Delete</button></li>';}).join('')||'<li class="note">No saved prompts yet.</li>';}
 function saveMy(){var v=document.getElementById('myprompt').value.trim();if(!v)return;my.unshift(v);localStorage.setItem('pp-my',JSON.stringify(my));document.getElementById('myprompt').value='';renderMy();}
