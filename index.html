@@ -3,204 +3,113 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prompt Playbook — George &amp; Strider</title>
+<title>Prompt Playbook</title>
 <style>
 body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#14101f;color:#f2eefc;margin:0;padding:20px}
-h1{font-size:24px;margin:0 0 4px} p.sub{color:#c9bfe0;margin:0 0 20px}
+main{max-width:620px;margin:0 auto}
+h1{font-size:28px;margin:0 0 4px} p.sub{color:#c9bfe0;margin:0 0 20px;line-height:1.5}
 .card{background:#221b38;border:1px solid #3d2f66;border-radius:16px;padding:16px;margin:0 0 14px}
-.tier{display:inline-block;background:#7a2cf0;color:#fff;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700}
-h2{font-size:18px;margin:8px 0} h3{font-size:14px;margin:12px 0 4px;color:#d9c8ff}
-pre{white-space:pre-wrap;background:#120e1d;border-radius:10px;padding:12px;font-size:14px;line-height:1.5;margin:0}
-button{background:#7a2cf0;color:#fff;border:0;border-radius:10px;padding:10px 14px;font-size:14px;cursor:pointer;margin-top:10px;margin-right:6px}
-button:active{transform:scale(.97)} ul{line-height:1.6;padding-left:20px}
-.note{color:#c9bfe0;font-size:14px}
-input[type=text],textarea{width:100%;box-sizing:border-box;border-radius:10px;padding:10px;background:#120e1d;color:#fff;border:1px solid #3d2f66;font-size:14px}
-.fill label{display:block;color:#c9bfe0;font-size:13px;margin-top:8px}
-.preview{background:#120e1d;border:1px dashed #7a2cf0;border-radius:10px;padding:12px;font-size:14px;line-height:1.5;margin-top:10px;white-space:pre-wrap}
-.example{background:#1a1430;border-radius:10px;padding:12px;font-size:14px;line-height:1.5}
-.ledger-row{border-top:1px solid #3d2f66;padding:10px 0}
-.ledger-row:first-child{border-top:0}
-.mode-btn.active{background:#22c55e;color:#111}
-.wizard{background:#1e2a1a;border:2px solid #22c55e}
-body.beginner .template-card .fill,body.beginner .template-card .preview,body.beginner .template-card .example,body.beginner .template-card h3{display:none}
-body.beginner .template-card .use-btn{display:inline-block}
-.wizard-step{font-size:13px;color:#c9bfe0}
-.big{font-size:18px;padding:14px 20px}
+h2{font-size:18px;margin:0 0 8px}
+textarea{width:100%;box-sizing:border-box;border-radius:12px;padding:12px;background:#120e1d;color:#fff;border:1px solid #3d2f66;font-size:16px}
+button{background:#7a2cf0;color:#fff;border:0;border-radius:12px;padding:12px 16px;font-size:16px;cursor:pointer;margin:6px 6px 0 0;min-height:48px}
+button.secondary{background:#2a2f45} button:active{transform:scale(.97)}
+.chip{background:#2a2f45;font-size:14px;padding:8px 12px;min-height:40px}
+pre{white-space:pre-wrap;background:#120e1d;border-radius:12px;padding:14px;font-size:15px;line-height:1.6;margin:12px 0}
+.note{color:#c9bfe0;font-size:14px;line-height:1.5}
+ul{line-height:1.6;padding-left:20px}
+.big{font-size:18px;padding:14px 20px;width:100%;margin:12px 0 0}
 </style>
 </head>
-<body>
+<body><main>
 <h1>Prompt Playbook</h1>
-<p class="sub">George &amp; Strider. Fill in a template, preview it live, copy it, and check its health. No signup, no upload, everything stays in this browser. This page is maintained by a daily Tier 3 review: changes are logged, not silently made.</p>
-<input id="search" placeholder="Search templates, e.g. shopping, social" oninput="filterCards()" style="width:100%;box-sizing:border-box;padding:10px;border-radius:10px;background:#120e1d;color:#fff;border:1px solid #3d2f66;margin-bottom:14px">
-<div class="card"><h2>How do you want to use this?</h2>
-<p class="note">Beginner hides the details and walks you through one prompt at a time. Expert shows every template in full, as before.</p>
-<button id="modeBeginner" class="mode-btn" onclick="setMode('beginner')">Beginner: guide me</button>
-<button id="modeExpert" class="mode-btn" onclick="setMode('expert')">Expert: show everything</button>
-<button onclick="surpriseMe()" class="big">🎲 Surprise me: pick a prompt for me</button>
-</div>
-<div class="card wizard" id="wizard" style="display:none"><h2 id="wizardTitle">Guided prompt</h2>
-<p id="wizardTier" class="note"></p>
-<p id="wizardStep" class="wizard-step"></p>
-<p id="wizardQuestion" style="font-size:18px"></p>
-<input id="wizardInput" type="text" placeholder="Type in plain words">
-<div id="wizardFinal" style="display:none"><div id="wizardPreview" class="preview"></div><div id="wizardHealth" class="note" style="margin-top:10px"></div>
-<button onclick="copyWizard()">Copy this prompt</button></div>
-<div><button id="wizardBack" onclick="wizardBack()">Back</button><button id="wizardNext" onclick="wizardNext()">Next</button><button onclick="surpriseMe()" style="background:#2a2f45">Surprise me again</button></div>
+<p class="sub">You do not need to know anything about prompts. Just say what you want to do, in plain words, and we fill in the rest for you. Copy it, paste it into any AI chat, and go.</p>
+
+<div class="card"><h2>1. What do you want to do?</h2>
+<textarea id="idea" rows="3" placeholder="For example: plan a trip to Miami, write a work email, compare two phones, make a weekly budget"></textarea>
+<p class="note">Tap an idea below if you are not sure where to start, or type your own.</p>
+<div id="chips"></div>
+<button class="big" onclick="surpriseMe()">🎲 Surprise me: make my prompt</button>
+<p class="note">If you leave the box empty, Surprise me picks an idea for you. If you type an idea, Surprise me builds a complete prompt around your idea, not a random one.</p>
 </div>
 
-<div class="card template-card" data-proof="Research"><span class="tier">Tier 1</span><h2>Research</h2>
-<p class="plain note">In plain words: ask one question well, and make sure the answer can be checked.</p>
-<pre class="template" id="t1">Goal: {{decision}}
-Constraints: {{timeframe}}, sources to prefer: {{sources}}, exclude: {{exclude}}
-Check: cite sources, separate verified facts from estimates, say what is still unverified.
-Stop: if no reliable source exists, say so instead of filling the gap.
-Output: {{outputFormat}} — success means: {{success}}</pre>
-<div class="fill"></div><div class="preview"></div>
-<button onclick="copyFilled('t1',this)">Copy filled prompt</button><button onclick="copy('t1',this)" style="background:#2a2f45">Copy blank template</button>
-<button class="use-btn" onclick="startWizard('t1')">Use this template, guided</button>
-<h3>Worked example</h3><p class="example">Goal: decide whether to attend GitHub Universe virtually or in person. Constraints: Oct 28-29, 2026, official GitHub sources preferred, exclude paid-pass hype. Check: cite the official schedule and price, separate confirmed prices from estimates. Stop: do not register or pay without my yes. Output: a short comparison — success means I can choose virtual or in-person from it.</p></div>
+<div class="card" id="resultCard" style="display:none"><h2>2. Here is your ready prompt</h2>
+<p class="note" id="whyLine"></p>
+<pre id="result"></pre>
+<p class="note" id="healthLine"></p>
+<button onclick="copyResult()">Copy this prompt</button>
+<button class="secondary" onclick="toggleLength()">Make it shorter / longer</button>
+<button class="secondary" onclick="surpriseMe()">Try another one</button>
+<button class="secondary" onclick="saveResult()">Save this prompt</button>
+</div>
 
-<div class="card template-card" data-proof="Shopping"><span class="tier">Tier 2</span><h2>Shopping</h2>
-<p class="plain note">In plain words: buy something once, with the limits and fit checked first.</p>
-<pre class="template" id="t2">Goal: {{item}} for {{useCase}}
-Hard limits: budget {{budget}}, size/fit {{fit}}, must-haves: {{mustHaves}}, must-not-haves: {{mustNotHaves}}
-Check: verify each limit against the listing or spec sheet, and name what the listing does NOT publish.
-Stop: do not buy, and do not contact a seller, without a fresh yes naming the exact item.
-Output: {{outputFormat}} — success means: {{success}}</pre>
-<div class="fill"></div><div class="preview"></div>
-<button onclick="copyFilled('t2',this)">Copy filled prompt</button><button onclick="copy('t2',this)" style="background:#2a2f45">Copy blank template</button>
-<button class="use-btn" onclick="startWizard('t2')">Use this template, guided</button>
-<h3>Worked example</h3><p class="example">Goal: a motorcycle jacket for riding in the mid-to-high 60s. Hard limits: budget under $250, CE Level 1, Large torso with long arms, wind protection, must-not-haves: perforations. Check: verify sleeve length center-back-neck to wrist and back-pocket size against the 17.1 inch D3O Viper insert, and name what the listing does NOT publish. Stop: do not buy without a fresh yes naming the exact item. Output: a shortlist with dimensions checked — success means I can pick one without guessing on fit.</p></div>
-
-<div class="card template-card" data-proof="Build an app"><span class="tier">Tier 2</span><h2>Build an app</h2>
-<p class="plain note">In plain words: get an app built, checked live, and published without extras sneaking in.</p>
-<pre class="template" id="t3">Goal: {{appIdea}} for {{whoFor}}
-Constraints: single file if possible, {{visibility}}, no signup, no upload if that matters
-Check: show it working before publishing, test on phone size, check the live URL after upload, verify the live result (links, counts, versions) before calling it done.
-Stop: no monetization, ads, extra features, or merging apps unless approved separately.
-Output: {{outputFormat}} — success means: {{success}}</pre>
-<div class="fill"></div><div class="preview"></div>
-<button onclick="copyFilled('t3',this)">Copy filled prompt</button><button onclick="copy('t3',this)" style="background:#2a2f45">Copy blank template</button>
-<button class="use-btn" onclick="startWizard('t3')">Use this template, guided</button>
-<h3>Worked example</h3><p class="example">Goal: Sound Lab, a 16-step beat maker for phone browsers. Constraints: single file, public, no signup, no upload. Check: show it working before publishing, test on phone size, check the live URL after upload, verify the live result before calling it done. Stop: no monetization, ads, or extra features unless approved separately. Output: a live Pages link — success means I can play a pattern on my phone.</p></div>
-
-<div class="card template-card" data-proof="Social post"><span class="tier">Tier 3</span><h2>Social post</h2>
-<p class="plain note">In plain words: post once, approved by you first, without spamming anyone.</p>
-<pre class="template" id="t4">Goal: {{appOrIdea}} on {{platformFirst}}
-Rules: Threads first; via connector, never browser commenting; "Link in bio." on Instagram, no em dashes, photo reuse cap of 2; comments only as reply-backs or on followed/community accounts, each uniquely written and individually approved; Instagram comments by George himself or none
-Check: show the exact caption and image before posting, confirm the link is clickable where it should be.
-Stop: max 1 feed post per platform per day, max 1-2 Threads comments per day hours apart, no bulk likes/follows/DMs, skip a platform entirely on any warning, no evasion methods.
-Output: {{outputFormat}} — success means: {{success}}</pre>
-<div class="fill"></div><div class="preview"></div>
-<button onclick="copyFilled('t4',this)">Copy filled prompt</button><button onclick="copy('t4',this)" style="background:#2a2f45">Copy blank template</button>
-<button class="use-btn" onclick="startWizard('t4')">Use this template, guided</button>
-<h3>Worked example</h3><p class="example">Goal: Glitch Studio mirror post on Threads first. Rules: via connector, never browser commenting, no em dashes, photo reuse cap of 2, caption decisive, not indecisive. Check: show the exact caption and image before posting, confirm the link is clickable. Stop: max 1 feed post that day, skip a platform entirely on any warning. Output: one approved caption and image — success means I can approve it in one message and it goes out exactly as approved.</p></div>
-
-<div class="card template-card" data-proof="Recurring job"><span class="tier">Tier 4</span><h2>Recurring job</h2>
-<p class="plain note">In plain words: set a job once that checks something on a schedule and reports back.</p>
-<pre class="template" id="t5">Goal: {{jobTask}}
-Schedule: {{schedule}} {{timezone}}
-Rules: what it may do: {{mayDo}}; what it may never do: {{mayNeverDo}}; safety stop on warnings
-Output: {{outputFormat}} — success means: {{success}}
-Stop: implementation only after approval in chat, never from the job itself.</pre>
-<div class="fill"></div><div class="preview"></div>
-<button onclick="copyFilled('t5',this)">Copy filled prompt</button><button onclick="copy('t5',this)" style="background:#2a2f45">Copy blank template</button>
-<button class="use-btn" onclick="startWizard('t5')">Use this template, guided</button>
-<h3>Worked example</h3><p class="example">Goal: check Glitch Studio and Ride Check for one genuinely useful improvement each. Schedule: daily 2:00pm America/New_York. Rules: what it may do: propose only; what it may never do: implement, upload, or change a repo; safety stop on any warning. Output: a proposal, report only — success means I can say yes or no to each item separately. Stop: implementation only after approval in chat, never from the job itself.</p></div>
-
-<div class="card"><h2>Prompt health check</h2>
-<p class="note">Paste any prompt below. This is a simple word check, not AI judgment. It looks for the four parts your best prompts have: a goal, a constraint, a check step, and a stop rule. It cannot tell if a prompt is clever, only if those four parts are present.</p>
-<textarea id="healthInput" rows="5" style="background:#120e1d;color:#fff;border:1px solid #3d2f66" placeholder="Paste your prompt here, for example: Find a jacket under $250. Check the sleeve length. Do not buy without my yes."></textarea>
-<button onclick="healthCheck()">Check my prompt</button>
-<button onclick="document.getElementById('healthInput').value=document.getElementById('t2').innerText;healthCheck();" style="background:#2a2f45">Try it with the Shopping template</button>
-<div id="healthResult" class="note" style="margin-top:12px"></div></div>
-
-<div class="card"><h2>Proof Ledger</h2>
-<p class="note">A logbook, not a star rating. Each template shows where it really came from, what failure it prevents, and whether it has actually been reused in this app. Reuse counts start at 0 and are honest: the Oct 26 daily review found no template had been copied or reused in the app yet. Log a use below after you actually use a template, and the count and verdict update in this browser only. Nothing is uploaded.</p>
-<div id="ledger"></div></div>
-
-<div class="card"><h2>Rules that travel</h2>
-<ul>
-<li>Draft before publish.</li>
-<li>One decision per message.</li>
-<li>Write the stop rule into the prompt.</li>
-<li>No private follows. No em dashes in social copy. Photo reuse cap of 2.</li>
-<li>Proposal first for app changes. Safety stops on any platform warning.</li>
-<li>Social, revised Oct 26, 2026: no browser commenting; Threads comments only via connector, individually approved, max 1-2/day, reply-backs or followed/community accounts only; Instagram comments by George himself or none; max 1 feed post per platform per day.</li>
-<li>Verify the live result (links, counts, versions) before calling work done.</li>
-<li>No chaining: templates are used one at a time, not chained together, unless you ask for chaining separately.</li>
-</ul>
-<p class="note">Changelog lives in changelog.md next to this page. Every daily review entry says what changed, what it replaced, and whether the last change was actually useful.</p>
-<p class="note">What's missing? Tell us on GitHub: <a href="https://github.com/GeorgeStriderBuilds/prompt-playbook/issues" style="color:#d9c8ff">prompt-playbook issues</a>. No tracking, no signup needed to read them.</p></div>
-
-<div class="card"><h2>My prompts</h2>
-<p class="note">Save your own prompts here. They stay in this browser only, no upload.</p>
-<textarea id="myprompt" rows="4" style="background:#120e1d;color:#fff;border:1px solid #3d2f66" placeholder="Paste a prompt that worked for you"></textarea>
-<button onclick="saveMy()">Save my prompt</button>
-<button onclick="exportMy()" style="background:#2a2f45">Export my prompts</button>
-<button onclick="document.getElementById('importFile').click()" style="background:#2a2f45">Import my prompts</button>
+<div class="card"><h2>3. Your saved prompts</h2>
+<p class="note">Saved in this browser only. Nothing is uploaded anywhere.</p>
+<ul id="mylist"></ul>
+<button class="secondary" onclick="exportMy()">Export saved prompts</button>
+<button class="secondary" onclick="document.getElementById('importFile').click()">Import saved prompts</button>
 <input id="importFile" type="file" accept=".json,application/json" style="display:none" onchange="importMy(event)">
-<p class="note">Export downloads your saved prompts as a JSON file you can keep or move to another device. Import reads that same file back in and adds any prompts you do not already have. Nothing is uploaded anywhere.</p>
-<ul id="mylist"></ul></div>
+</div>
+
+<p class="note">How it works, in one line: a good prompt says what you want, what the limits are, how to check it, and what must never happen. We add those four parts for you, so you do not have to learn them. What's missing? Tell us on GitHub: <a href="https://github.com/GeorgeStriderBuilds/prompt-playbook/issues" style="color:#d9c8ff">prompt-playbook issues</a>.</p>
+</main>
 <script>
-function copy(id,btn){var t=document.getElementById(id).innerText;navigator.clipboard.writeText(t).then(function(){if(btn){var old=btn.textContent;btn.textContent='Copied!';setTimeout(function(){btn.textContent=old;},1500);}});}
-function filterCards(){var q=(document.getElementById('search').value||'').toLowerCase();document.querySelectorAll('.card').forEach(function(c){if(c.querySelector('pre')){c.style.display=c.innerText.toLowerCase().includes(q)?'':'none';}});}
-function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;');}
-document.querySelectorAll('.template-card').forEach(function(card){
-  var pre=card.querySelector('.template');var fill=card.querySelector('.fill');var preview=card.querySelector('.preview');
-  var vars=[];var seen={};(pre.innerText.match(/\{\{[^}]+\}\}/g)||[]).forEach(function(v){var name=v.slice(2,-2);if(!seen[name]){seen[name]=1;vars.push(name);}});
-  vars.forEach(function(name){
-    var lab=document.createElement('label');lab.textContent=name;
-    var inp=document.createElement('input');inp.type='text';inp.placeholder=name;inp.dataset.varName=name;
-    inp.addEventListener('input',update);lab.appendChild(inp);fill.appendChild(lab);
-  });
-  function update(){var text=pre.innerText;vars.forEach(function(name){var val='';fill.querySelectorAll('input').forEach(function(i){if(i.dataset.varName===name)val=i.value;});text=text.split('{{'+name+'}}').join(val||'['+name+']');});preview.textContent=text;}
-  update();card._updatePreview=update;card._getFilled=function(){return preview.textContent;};
-});
-function copyFilled(id,btn){var card=document.getElementById(id).closest('.template-card');var t=card?card._getFilled():document.getElementById(id).innerText;navigator.clipboard.writeText(t).then(function(){if(btn){var old=btn.textContent;btn.textContent='Copied!';setTimeout(function(){btn.textContent=old;},1500);}});}
-function setMode(mode){localStorage.setItem('pp-mode',mode);document.body.classList.toggle('beginner',mode==='beginner');document.getElementById('modeBeginner').classList.toggle('active',mode==='beginner');document.getElementById('modeExpert').classList.toggle('active',mode==='expert');}
-var tierExplain={'Tier 1':'Tier 1: a simple question. No action, no risk.','Tier 2':'Tier 2: one job, with hard limits.','Tier 3':'Tier 3: you hand over judgment, but keep approval gates.','Tier 4':'Tier 4: a job that runs on a clock, not in chat.'};
-var wizardState={id:null,vars:[],step:0,values:{},lastId:null};
-function getTemplateInfo(id){var card=document.getElementById(id).closest('.template-card');var tier=card.querySelector('.tier').textContent;var name=card.querySelector('h2').textContent;var vars=[];var seen={};(document.getElementById(id).innerText.match(/\{\{[^}]+\}\}/g)||[]).forEach(function(v){var n=v.slice(2,-2);if(!seen[n]){seen[n]=1;vars.push(n);}});return {card:card,tier:tier,name:name,vars:vars};}
-function humanVar(v){return v.replace(/([A-Z])/g,' $1').replace(/^./,function(c){return c.toUpperCase();});}
-function startWizard(id){var info=getTemplateInfo(id);wizardState={id:id,vars:info.vars,step:0,values:{},lastId:id};document.getElementById('wizard').style.display='';renderWizard();document.getElementById('wizard').scrollIntoView({behavior:'smooth'});}
-function surpriseMe(){var ids=['t1','t2','t3','t4','t5'].filter(function(x){return x!==wizardState.lastId;});var id=ids[Math.floor(Math.random()*ids.length)];startWizard(id);}
-function renderWizard(){var info=getTemplateInfo(wizardState.id);document.getElementById('wizardTitle').textContent='Guided: '+info.name;document.getElementById('wizardTier').textContent=tierExplain[info.tier]||info.tier;
-if(wizardState.step<wizardState.vars.length){document.getElementById('wizardFinal').style.display='none';document.getElementById('wizardInput').style.display='';document.getElementById('wizardNext').textContent='Next';var v=wizardState.vars[wizardState.step];document.getElementById('wizardStep').textContent='Step '+(wizardState.step+1)+' of '+wizardState.vars.length+' — '+info.name;document.getElementById('wizardQuestion').textContent='What is the '+humanVar(v)+'? Type it in plain words.';document.getElementById('wizardInput').value=wizardState.values[v]||'';document.getElementById('wizardInput').placeholder=v;document.getElementById('wizardInput').focus();}
-else{var text=document.getElementById(wizardState.id).innerText;wizardState.vars.forEach(function(v){text=text.split('{{'+v+'}}').join(wizardState.values[v]||'['+v+']');});document.getElementById('wizardInput').style.display='none';document.getElementById('wizardStep').textContent='Done — check it, then copy it.';document.getElementById('wizardQuestion').textContent='Here is your finished prompt. The health check below is the same Goal, Constraint, Check, Stop check from the app.';document.getElementById('wizardFinal').style.display='';document.getElementById('wizardPreview').textContent=text;document.getElementById('wizardHealth').innerHTML=healthHtml(text);document.getElementById('wizardNext').textContent='Surprise me again';}}
-function wizardNext(){if(wizardState.step<wizardState.vars.length){var v=wizardState.vars[wizardState.step];wizardState.values[v]=document.getElementById('wizardInput').value.trim();wizardState.step++;renderWizard();}else{surpriseMe();}}
-function wizardBack(){if(wizardState.step>0){if(wizardState.step<wizardState.vars.length){var v=wizardState.vars[wizardState.step];wizardState.values[v]=document.getElementById('wizardInput').value.trim();}wizardState.step--;renderWizard();}}
-function copyWizard(){var t=document.getElementById('wizardPreview').textContent;navigator.clipboard.writeText(t).then(function(){alert('Copied!');});}
-function healthHtml(t){var low=t.toLowerCase();var goal=/\bgoal\b|^(build|write|find|post|check|create|compare|plan|draft|make|search|list|improve|review)\b/.test(low);var constraint=/\bconstraint|hard limit|budget|under \$|max |at most|only |must |must-not|no |size|limit\b/.test(low);var check=/\bcheck\b|verify|show me|before |confirm|cite|read back|double-check/.test(low);var stop=/\bstop\b|do not|never|skip|unless|only if|without my|do not buy|do not post/.test(low);var parts=[['Goal',goal],['Constraint',constraint],['Check step',check],['Stop rule',stop]];var score=parts.filter(function(p){return p[1];}).length;return '<strong>Health: '+score+' / 4</strong> — '+parts.map(function(p){return (p[1]?'✓ ':'✗ ')+p[0];}).join(', ');}
-setMode(localStorage.getItem('pp-mode')||'beginner');
-document.getElementById('wizardInput').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();wizardNext();}});
+var commonIdeas=['Write a work email','Plan a trip','Make a weekly budget','Study for a test','Write a social media post','Plan a workout week','Cook with what is in the fridge','Write a resume bullet','Plan a birthday party','Learn a new topic','Compare two phones','Start a small business idea'];
+var chipsEl=document.getElementById('chips');
+commonIdeas.forEach(function(idea){var b=document.createElement('button');b.className='chip';b.textContent=idea;b.onclick=function(){document.getElementById('idea').value=idea;generate(idea);};chipsEl.appendChild(b);});
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function categoryFor(idea){
+  var s=idea.toLowerCase();
+  if(/buy|purchase|shop|price|gift|jacket|phone|laptop|shoes|car|find a|choose a/.test(s))return 'shopping';
+  if(/instagram|threads|social|caption|reel|post about/.test(s))return 'social';
+  if(/app|website|build a tool|program|code a/.test(s))return 'app';
+  if(/every day|daily|weekly|remind|routine|habit|check.*every/.test(s))return 'recurring';
+  if(/email|letter|message|resume|cover letter|write a/.test(s))return 'writing';
+  if(/plan|trip|party|birthday|vacation|itinerary|wedding/.test(s))return 'planning';
+  if(/study|exam|test|homework|learn/.test(s))return 'study';
+  if(/compare|decide|research|which is better|pros and cons|what is/.test(s))return 'research';
+  return 'general';
+}
+function buildPrompt(idea,cat){
+  var check=pick(['Show it to me first before you finish, so I can approve it.','Check your answer against the facts you used, and say what is still uncertain.','Show me a short version first, then the full version.']);
+  var stop=pick(['Do not guess or invent facts. If you do not know, say so.','Do not add extra features, costs, or steps I did not ask for.','Do not post, send, buy, or book anything without my yes.']);
+  var base={
+    shopping:'Goal: help me '+idea+'.\nLimits: stay within a budget I can afford, and only suggest things that actually fit what I need. Tell me the size, price, and what is included.\nCheck: '+check+'\nStop: '+stop+'\nOutput: a short list I can choose from, with the best option first and why it wins.',
+    social:'Goal: help me '+idea+'.\nLimits: keep it clear, short, and in a normal human voice. No filler words, no hype, and be decisive, not unsure.\nCheck: '+check+'\nStop: '+stop+'\nOutput: one finished post I can copy and paste, nothing else to fix.',
+    app:'Goal: help me '+idea+'.\nLimits: keep it simple, work on a phone, no signup, and no extra features I did not ask for.\nCheck: show me how it works before you call it done, and test it on a small phone screen.\nStop: '+stop+'\nOutput: a working version I can try right away, plus one line on what to test first.',
+    recurring:'Goal: help me '+idea+'.\nLimits: keep it short, only tell me when something actually changed, and stay quiet on quiet days.\nCheck: '+check+'\nStop: '+stop+'\nOutput: a short report I can read in under a minute.',
+    writing:'Goal: help me '+idea+'.\nLimits: keep it polite, clear, and short. Use plain words, short sentences, and one clear ask at the end.\nCheck: '+check+'\nStop: '+stop+'\nOutput: one finished draft I can copy and paste.',
+    planning:'Goal: help me '+idea+'.\nLimits: keep it realistic for time, money, and who is involved. No impossible schedules.\nCheck: '+check+'\nStop: '+stop+'\nOutput: a simple step-by-step plan, in order, with what to do first.',
+    study:'Goal: help me '+idea+'.\nLimits: explain it in plain words first, then add detail only where I need it. Use examples, not jargon.\nCheck: '+check+'\nStop: '+stop+'\nOutput: a short explanation, then 3 practice questions with answers.',
+    research:'Goal: help me '+idea+'.\nLimits: use reliable sources, prefer recent information, and leave out hype.\nCheck: cite your sources, separate facts you verified from estimates, and say what is still uncertain.\nStop: '+stop+'\nOutput: a clear answer first, then the reasons and sources behind it.',
+    general:'Goal: help me '+idea+'.\nLimits: keep it clear and practical, and only use information that fits what I asked for.\nCheck: '+check+'\nStop: '+stop+'\nOutput: a clear answer I can act on, in simple steps.'
+  };
+  return base[cat]||base.general;
+}
+var currentFull='',currentShort='',showingShort=false;
+function healthFor(text){var low=text.toLowerCase();var parts=[['Goal',/goal/.test(low)],['Limits',/limit/.test(low)],['Check',/check/.test(low)],['Stop',/stop/.test(low)]];var score=parts.filter(function(p){return p[1];}).length;return 'This prompt has '+score+' of 4 parts that make prompts work: '+parts.map(function(p){return (p[1]?'✓ ':'✗ ')+p[0];}).join(', ')+'.';}
+function generate(idea){
+  idea=(idea||'').trim();
+  if(!idea){idea=pick(commonIdeas);document.getElementById('idea').value=idea;}
+  var cat=categoryFor(idea);
+  currentFull=buildPrompt(idea,cat);
+  var lines=currentFull.split('\n');currentShort=lines[0]+'\n'+lines[lines.length-2]+'\n'+lines[lines.length-1];
+  showingShort=false;
+  document.getElementById('resultCard').style.display='';
+  document.getElementById('result').textContent=currentFull;
+  document.getElementById('whyLine').textContent='This prompt is about: '+idea+'. It already has the goal, the limits, a check, and a stop rule filled in for you.';
+  document.getElementById('healthLine').textContent=healthFor(currentFull);
+  document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});
+}
+function surpriseMe(){generate(document.getElementById('idea').value);}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('Copied! Paste it into any AI chat.');});}
+function toggleLength(){showingShort=!showingShort;document.getElementById('result').textContent=showingShort?currentShort:currentFull;}
 var my=JSON.parse(localStorage.getItem('pp-my')||'[]');
-function renderMy(){document.getElementById('mylist').innerHTML=my.map(function(p,i){return '<li>'+p.replace(/</g,'&lt;')+' <button onclick="delMy('+i+')">Delete</button></li>';}).join('')||'<li class="note">No saved prompts yet.</li>';}
-function saveMy(){var v=document.getElementById('myprompt').value.trim();if(!v)return;my.unshift(v);localStorage.setItem('pp-my',JSON.stringify(my));document.getElementById('myprompt').value='';renderMy();}
+function renderMy(){document.getElementById('mylist').innerHTML=my.map(function(p,i){return '<li>'+p.replace(/</g,'&lt;')+' <button class="secondary" onclick="copySaved('+i+')">Copy</button> <button class="secondary" onclick="delMy('+i+')">Delete</button></li>';}).join('')||'<li class="note">No saved prompts yet. Make one above and tap Save this prompt.</li>';}
+function saveResult(){var t=document.getElementById('result').textContent;if(!t||my.indexOf(t)!==-1)return;my.unshift(t);localStorage.setItem('pp-my',JSON.stringify(my));renderMy();}
+function copySaved(i){navigator.clipboard.writeText(my[i]).then(function(){alert('Copied!');});}
 function delMy(i){my.splice(i,1);localStorage.setItem('pp-my',JSON.stringify(my));renderMy();}
 function exportMy(){var data={app:'prompt-playbook',version:1,exported:new Date().toISOString(),myPrompts:my};var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='prompt-playbook-my-prompts.json';a.click();URL.revokeObjectURL(a.href);}
 function importMy(ev){var f=ev.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var d=JSON.parse(r.result);var list=Array.isArray(d)?d:d.myPrompts;if(!Array.isArray(list))throw new Error('bad file');var added=0;list.forEach(function(p){if(typeof p==='string'&&p.trim()&&my.indexOf(p)===-1){my.push(p);added++;}});localStorage.setItem('pp-my',JSON.stringify(my));renderMy();alert('Imported '+added+' new prompt(s).');}catch(e){alert('That file could not be imported. It needs to be a Prompt Playbook export, a JSON list of prompts.');}ev.target.value='';};r.readAsText(f);}
-function healthCheck(){var t=(document.getElementById('healthInput').value||'').trim();var low=t.toLowerCase();if(!t){document.getElementById('healthResult').innerHTML='Paste a prompt first.';return;}
-var goal=/\bgoal\b|^(build|write|find|post|check|create|compare|plan|draft|make|search|list|improve|review)\b/.test(low);
-var constraint=/\bconstraint|hard limit|budget|under \$|max |at most|only |must |must-not|no |size|limit\b/.test(low);
-var check=/\bcheck\b|verify|show me|before |confirm|cite|read back|double-check/.test(low);
-var stop=/\bstop\b|do not|never|skip|unless|only if|without my|do not buy|do not post/.test(low);
-var parts=[['Goal',goal,'Add one clear goal line, starting Goal: what you need done.'],['Constraint',constraint,'Add a hard limit, for example budget, size, or a must-not-have.'],['Check step',check,'Add how you will check it, for example show it to me before posting, or verify it against the listing.'],['Stop rule',stop,'Add what must never happen, for example do not buy without my yes, or skip a platform on any warning.']];
-var score=parts.filter(function(p){return p[1];}).length;
-var html='<strong>Score: '+score+' / 4</strong><ul>'+parts.map(function(p){return '<li>'+(p[1]?'✓ ':'✗ ')+p[0]+(p[1]?'': ' — '+p[2])+'</li>';}).join('')+'</ul>';
-if(score===4)html+='All four parts are present. That does not guarantee a good result, but it matches the shape of your strongest prompts.';
-document.getElementById('healthResult').innerHTML=html;}
-var ledgerSeed={
- 'Research':{origin:'Your real questions Oct 22-26, 2026, for example GitHub Universe and Muse plan questions',prevents:'Treating an estimate or a web snippet as a verified fact when a decision depends on it'},
- 'Shopping':{origin:'Your jacket hunt, Oct 24, 2026, which ended in the HMM532 purchase',prevents:'Buying the wrong size, or a perforated jacket for riding in the 60s'},
- 'Build an app':{origin:'Glitch Studio, Ride Check, and the other apps, Oct 25-26, 2026',prevents:'Calling an app done without checking the live link, and merging apps you decided to keep separate'},
- 'Social post':{origin:'Your Instagram and Threads posting, Oct 25-26, 2026',prevents:'The Oct 26 problem: 2 Threads comments removed as spam, and posting to Instagram while it showed a suspension page'},
- 'Recurring job':{origin:'Your daily trend check, app-improvement check, and weekly Threads check, Oct 25-26, 2026',prevents:'A scheduled job quietly re-enabling the old bulk-comment method, or inventing work on a quiet day'}
-};
-var ledgerStored={};try{ledgerStored=JSON.parse(localStorage.getItem('pp-ledger')||'{}');}catch(e){ledgerStored={};}
-function renderLedger(){var el=document.getElementById('ledger');el.innerHTML=Object.keys(ledgerSeed).map(function(name){var s=ledgerStored[name]||{count:0,verdict:'Not yet proven in the app',date:''};return '<div class="ledger-row"><strong>'+esc(name)+'</strong><br><span class="note">Came from: '+esc(ledgerSeed[name].origin)+'</span><br><span class="note">Prevents: '+esc(ledgerSeed[name].prevents)+'</span><br><span class="note">Reuses in this app: '+s.count+' — Last verdict: '+esc(s.verdict)+(s.date?' ('+esc(s.date)+')':'')+'</span><br><button onclick="logUse(\''+name.replace(/'/g,"\\'")+'\',\'Worked, reuse as-is\')" style="background:#2a2f45">Log: worked</button><button onclick="logUse(\''+name.replace(/'/g,"\\'")+'\',\'Drifted, tightened the stop rule\')" style="background:#2a2f45">Log: drifted</button></div>';}).join('');}
-function logUse(name,verdict){var cur=ledgerStored[name]||{count:0,verdict:'Not yet proven in the app',date:''};cur.count+=1;cur.verdict=verdict;cur.date=new Date().toISOString().slice(0,10);ledgerStored[name]=cur;localStorage.setItem('pp-ledger',JSON.stringify(ledgerStored));renderLedger();}
-renderMy();renderLedger();
+renderMy();
 </script>
-</body>
-</html>
+</body></html>
