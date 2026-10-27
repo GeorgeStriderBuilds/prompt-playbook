@@ -11,58 +11,82 @@ h1{font-size:24px;margin:0 0 4px} p.sub{color:#c9bfe0;margin:0 0 20px}
 .tier{display:inline-block;background:#7a2cf0;color:#fff;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700}
 h2{font-size:18px;margin:8px 0} h3{font-size:14px;margin:12px 0 4px;color:#d9c8ff}
 pre{white-space:pre-wrap;background:#120e1d;border-radius:10px;padding:12px;font-size:14px;line-height:1.5;margin:0}
-button{background:#7a2cf0;color:#fff;border:0;border-radius:10px;padding:10px 14px;font-size:14px;cursor:pointer;margin-top:10px}
+button{background:#7a2cf0;color:#fff;border:0;border-radius:10px;padding:10px 14px;font-size:14px;cursor:pointer;margin-top:10px;margin-right:6px}
 button:active{transform:scale(.97)} ul{line-height:1.6;padding-left:20px}
 .note{color:#c9bfe0;font-size:14px}
+input[type=text],textarea{width:100%;box-sizing:border-box;border-radius:10px;padding:10px;background:#120e1d;color:#fff;border:1px solid #3d2f66;font-size:14px}
+.fill label{display:block;color:#c9bfe0;font-size:13px;margin-top:8px}
+.preview{background:#120e1d;border:1px dashed #7a2cf0;border-radius:10px;padding:12px;font-size:14px;line-height:1.5;margin-top:10px;white-space:pre-wrap}
+.example{background:#1a1430;border-radius:10px;padding:12px;font-size:14px;line-height:1.5}
+.ledger-row{border-top:1px solid #3d2f66;padding:10px 0}
+.ledger-row:first-child{border-top:0}
 </style>
 </head>
 <body>
 <h1>Prompt Playbook</h1>
-<p class="sub">George &amp; Strider. Tap a template to copy it. This page is maintained by a daily Tier 3 review: changes are logged, not silently made.</p>
+<p class="sub">George &amp; Strider. Fill in a template, preview it live, copy it, and check its health. No signup, no upload, everything stays in this browser. This page is maintained by a daily Tier 3 review: changes are logged, not silently made.</p>
 <input id="search" placeholder="Search templates, e.g. shopping, social" oninput="filterCards()" style="width:100%;box-sizing:border-box;padding:10px;border-radius:10px;background:#120e1d;color:#fff;border:1px solid #3d2f66;margin-bottom:14px">
 
-<div class="card"><span class="tier">Tier 1</span><h2>Research</h2>
-<pre id="t1">Goal: [what you need to decide]
-Constraints: [timeframe, sources to prefer, what to exclude]
+<div class="card template-card" data-proof="Research"><span class="tier">Tier 1</span><h2>Research</h2>
+<pre class="template" id="t1">Goal: {{decision}}
+Constraints: {{timeframe}}, sources to prefer: {{sources}}, exclude: {{exclude}}
 Check: cite sources, separate verified facts from estimates, say what is still unverified.
-Stop: if no reliable source exists, say so instead of filling the gap.</pre>
-<button onclick="copy('t1',this)">Copy template</button></div>
+Stop: if no reliable source exists, say so instead of filling the gap.
+Output: {{outputFormat}} — success means: {{success}}</pre>
+<div class="fill"></div><div class="preview"></div>
+<button onclick="copyFilled('t1',this)">Copy filled prompt</button><button onclick="copy('t1',this)" style="background:#2a2f45">Copy blank template</button>
+<h3>Worked example</h3><p class="example">Goal: decide whether to attend GitHub Universe virtually or in person. Constraints: Oct 28-29, 2026, official GitHub sources preferred, exclude paid-pass hype. Check: cite the official schedule and price, separate confirmed prices from estimates. Stop: do not register or pay without my yes. Output: a short comparison — success means I can choose virtual or in-person from it.</p></div>
 
-<div class="card"><span class="tier">Tier 2</span><h2>Shopping</h2>
-<pre id="t2">Goal: [item, use case]
-Hard limits: [budget, size/fit dimensions, must-haves, must-not-haves]
+<div class="card template-card" data-proof="Shopping"><span class="tier">Tier 2</span><h2>Shopping</h2>
+<pre class="template" id="t2">Goal: {{item}} for {{useCase}}
+Hard limits: budget {{budget}}, size/fit {{fit}}, must-haves: {{mustHaves}}, must-not-haves: {{mustNotHaves}}
 Check: verify each limit against the listing or spec sheet, and name what the listing does NOT publish.
-Stop: do not buy, and do not contact a seller, without a fresh yes naming the exact item.</pre>
-<button onclick="copy('t2',this)">Copy template</button></div>
+Stop: do not buy, and do not contact a seller, without a fresh yes naming the exact item.
+Output: {{outputFormat}} — success means: {{success}}</pre>
+<div class="fill"></div><div class="preview"></div>
+<button onclick="copyFilled('t2',this)">Copy filled prompt</button><button onclick="copy('t2',this)" style="background:#2a2f45">Copy blank template</button>
+<h3>Worked example</h3><p class="example">Goal: a motorcycle jacket for riding in the mid-to-high 60s. Hard limits: budget under $250, CE Level 1, Large torso with long arms, wind protection, must-not-haves: perforations. Check: verify sleeve length center-back-neck to wrist and back-pocket size against the 17.1 inch D3O Viper insert, and name what the listing does NOT publish. Stop: do not buy without a fresh yes naming the exact item. Output: a shortlist with dimensions checked — success means I can pick one without guessing on fit.</p></div>
 
-<div class="card"><span class="tier">Tier 2</span><h2>Build an app</h2>
-<pre id="t3">Goal: [what it does, who it is for]
-Constraints: [single file if possible, public or private, no signup, no upload if that matters]
-Check: show it working before publishing, test on phone size, check the live URL after upload.
-Stop: no monetization, ads, or extra features unless approved separately.</pre>
-<button onclick="copy('t3',this)">Copy template</button></div>
+<div class="card template-card" data-proof="Build an app"><span class="tier">Tier 2</span><h2>Build an app</h2>
+<pre class="template" id="t3">Goal: {{appIdea}} for {{whoFor}}
+Constraints: single file if possible, {{visibility}}, no signup, no upload if that matters
+Check: show it working before publishing, test on phone size, check the live URL after upload, verify the live result (links, counts, versions) before calling it done.
+Stop: no monetization, ads, extra features, or merging apps unless approved separately.
+Output: {{outputFormat}} — success means: {{success}}</pre>
+<div class="fill"></div><div class="preview"></div>
+<button onclick="copyFilled('t3',this)">Copy filled prompt</button><button onclick="copy('t3',this)" style="background:#2a2f45">Copy blank template</button>
+<h3>Worked example</h3><p class="example">Goal: Sound Lab, a 16-step beat maker for phone browsers. Constraints: single file, public, no signup, no upload. Check: show it working before publishing, test on phone size, check the live URL after upload, verify the live result before calling it done. Stop: no monetization, ads, or extra features unless approved separately. Output: a live Pages link — success means I can play a pattern on my phone.</p></div>
 
-<div class="card"><span class="tier">Tier 3</span><h2>Social post</h2>
-<pre id="t4">Goal: [which app or idea, which platform first]
-Rules: [Threads first if Instagram is on standby, one topic tag on Threads, "Link in bio." on Instagram, no em dashes, photo reuse cap of 2]
+<div class="card template-card" data-proof="Social post"><span class="tier">Tier 3</span><h2>Social post</h2>
+<pre class="template" id="t4">Goal: {{appOrIdea}} on {{platformFirst}}
+Rules: Threads first; via connector, never browser commenting; "Link in bio." on Instagram, no em dashes, photo reuse cap of 2; comments only as reply-backs or on followed/community accounts, each uniquely written and individually approved; Instagram comments by George himself or none
 Check: show the exact caption and image before posting, confirm the link is clickable where it should be.
-Stop: no more than [N] feed posts that day, skip a platform entirely on any warning.</pre>
-<button onclick="copy('t4',this)">Copy template</button></div>
+Stop: max 1 feed post per platform per day, max 1-2 Threads comments per day hours apart, no bulk likes/follows/DMs, skip a platform entirely on any warning, no evasion methods.
+Output: {{outputFormat}} — success means: {{success}}</pre>
+<div class="fill"></div><div class="preview"></div>
+<button onclick="copyFilled('t4',this)">Copy filled prompt</button><button onclick="copy('t4',this)" style="background:#2a2f45">Copy blank template</button>
+<h3>Worked example</h3><p class="example">Goal: Glitch Studio mirror post on Threads first. Rules: via connector, never browser commenting, no em dashes, photo reuse cap of 2, caption decisive, not indecisive. Check: show the exact caption and image before posting, confirm the link is clickable. Stop: max 1 feed post that day, skip a platform entirely on any warning. Output: one approved caption and image — success means I can approve it in one message and it goes out exactly as approved.</p></div>
 
-<div class="card"><span class="tier">Tier 4</span><h2>Recurring job</h2>
-<pre id="t5">Goal: [what the job checks or does]
-Schedule: [time, timezone]
-Rules: [what it may do, what it may never do, safety stop on warnings]
-Output: [proposal first / report only / silent on quiet days]
+<div class="card template-card" data-proof="Recurring job"><span class="tier">Tier 4</span><h2>Recurring job</h2>
+<pre class="template" id="t5">Goal: {{jobTask}}
+Schedule: {{schedule}} {{timezone}}
+Rules: what it may do: {{mayDo}}; what it may never do: {{mayNeverDo}}; safety stop on warnings
+Output: {{outputFormat}} — success means: {{success}}
 Stop: implementation only after approval in chat, never from the job itself.</pre>
-<button onclick="copy('t5',this)">Copy template</button></div>
+<div class="fill"></div><div class="preview"></div>
+<button onclick="copyFilled('t5',this)">Copy filled prompt</button><button onclick="copy('t5',this)" style="background:#2a2f45">Copy blank template</button>
+<h3>Worked example</h3><p class="example">Goal: check Glitch Studio and Ride Check for one genuinely useful improvement each. Schedule: daily 2:00pm America/New_York. Rules: what it may do: propose only; what it may never do: implement, upload, or change a repo; safety stop on any warning. Output: a proposal, report only — success means I can say yes or no to each item separately. Stop: implementation only after approval in chat, never from the job itself.</p></div>
 
 <div class="card"><h2>Prompt health check</h2>
 <p class="note">Paste any prompt below. This is a simple word check, not AI judgment. It looks for the four parts your best prompts have: a goal, a constraint, a check step, and a stop rule. It cannot tell if a prompt is clever, only if those four parts are present.</p>
-<textarea id="healthInput" rows="5" style="width:100%;box-sizing:border-box;border-radius:10px;padding:10px;background:#120e1d;color:#fff;border:1px solid #3d2f66" placeholder="Paste your prompt here, for example: Find a jacket under $250. Check the sleeve length. Do not buy without my yes."></textarea>
+<textarea id="healthInput" rows="5" style="background:#120e1d;color:#fff;border:1px solid #3d2f66" placeholder="Paste your prompt here, for example: Find a jacket under $250. Check the sleeve length. Do not buy without my yes."></textarea>
 <button onclick="healthCheck()">Check my prompt</button>
 <button onclick="document.getElementById('healthInput').value=document.getElementById('t2').innerText;healthCheck();" style="background:#2a2f45">Try it with the Shopping template</button>
 <div id="healthResult" class="note" style="margin-top:12px"></div></div>
+
+<div class="card"><h2>Proof Ledger</h2>
+<p class="note">A logbook, not a star rating. Each template shows where it really came from, what failure it prevents, and whether it has actually been reused in this app. Reuse counts start at 0 and are honest: the Oct 26 daily review found no template had been copied or reused in the app yet. Log a use below after you actually use a template, and the count and verdict update in this browser only. Nothing is uploaded.</p>
+<div id="ledger"></div></div>
 
 <div class="card"><h2>Rules that travel</h2>
 <ul>
@@ -71,12 +95,16 @@ Stop: implementation only after approval in chat, never from the job itself.</pr
 <li>Write the stop rule into the prompt.</li>
 <li>No private follows. No em dashes in social copy. Photo reuse cap of 2.</li>
 <li>Proposal first for app changes. Safety stops on any platform warning.</li>
+<li>Social, revised Oct 26, 2026: no browser commenting; Threads comments only via connector, individually approved, max 1-2/day, reply-backs or followed/community accounts only; Instagram comments by George himself or none; max 1 feed post per platform per day.</li>
+<li>Verify the live result (links, counts, versions) before calling work done.</li>
+<li>No chaining: templates are used one at a time, not chained together, unless you ask for chaining separately.</li>
 </ul>
-<p class="note">Changelog lives in changelog.md next to this page. Every daily review entry says what changed, what it replaced, and whether the last change was actually useful.</p></div>
+<p class="note">Changelog lives in changelog.md next to this page. Every daily review entry says what changed, what it replaced, and whether the last change was actually useful.</p>
+<p class="note">What's missing? Tell us on GitHub: <a href="https://github.com/GeorgeStriderBuilds/prompt-playbook/issues" style="color:#d9c8ff">prompt-playbook issues</a>. No tracking, no signup needed to read them.</p></div>
 
 <div class="card"><h2>My prompts</h2>
 <p class="note">Save your own prompts here. They stay in this browser only, no upload.</p>
-<textarea id="myprompt" rows="4" style="width:100%;box-sizing:border-box;border-radius:10px;padding:10px;background:#120e1d;color:#fff;border:1px solid #3d2f66" placeholder="Paste a prompt that worked for you"></textarea>
+<textarea id="myprompt" rows="4" style="background:#120e1d;color:#fff;border:1px solid #3d2f66" placeholder="Paste a prompt that worked for you"></textarea>
 <button onclick="saveMy()">Save my prompt</button>
 <button onclick="exportMy()" style="background:#2a2f45">Export my prompts</button>
 <button onclick="document.getElementById('importFile').click()" style="background:#2a2f45">Import my prompts</button>
@@ -86,6 +114,19 @@ Stop: implementation only after approval in chat, never from the job itself.</pr
 <script>
 function copy(id,btn){var t=document.getElementById(id).innerText;navigator.clipboard.writeText(t).then(function(){if(btn){var old=btn.textContent;btn.textContent='Copied!';setTimeout(function(){btn.textContent=old;},1500);}});}
 function filterCards(){var q=(document.getElementById('search').value||'').toLowerCase();document.querySelectorAll('.card').forEach(function(c){if(c.querySelector('pre')){c.style.display=c.innerText.toLowerCase().includes(q)?'':'none';}});}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+document.querySelectorAll('.template-card').forEach(function(card){
+  var pre=card.querySelector('.template');var fill=card.querySelector('.fill');var preview=card.querySelector('.preview');
+  var vars=[];var seen={};(pre.innerText.match(/\{\{[^}]+\}\}/g)||[]).forEach(function(v){var name=v.slice(2,-2);if(!seen[name]){seen[name]=1;vars.push(name);}});
+  vars.forEach(function(name){
+    var lab=document.createElement('label');lab.textContent=name;
+    var inp=document.createElement('input');inp.type='text';inp.placeholder=name;inp.dataset.varName=name;
+    inp.addEventListener('input',update);lab.appendChild(inp);fill.appendChild(lab);
+  });
+  function update(){var text=pre.innerText;vars.forEach(function(name){var val='';fill.querySelectorAll('input').forEach(function(i){if(i.dataset.varName===name)val=i.value;});text=text.split('{{'+name+'}}').join(val||'['+name+']');});preview.textContent=text;}
+  update();card._updatePreview=update;card._getFilled=function(){return preview.textContent;};
+});
+function copyFilled(id,btn){var card=document.getElementById(id).closest('.template-card');var t=card?card._getFilled():document.getElementById(id).innerText;navigator.clipboard.writeText(t).then(function(){if(btn){var old=btn.textContent;btn.textContent='Copied!';setTimeout(function(){btn.textContent=old;},1500);}});}
 var my=JSON.parse(localStorage.getItem('pp-my')||'[]');
 function renderMy(){document.getElementById('mylist').innerHTML=my.map(function(p,i){return '<li>'+p.replace(/</g,'&lt;')+' <button onclick="delMy('+i+')">Delete</button></li>';}).join('')||'<li class="note">No saved prompts yet.</li>';}
 function saveMy(){var v=document.getElementById('myprompt').value.trim();if(!v)return;my.unshift(v);localStorage.setItem('pp-my',JSON.stringify(my));document.getElementById('myprompt').value='';renderMy();}
@@ -102,7 +143,17 @@ var score=parts.filter(function(p){return p[1];}).length;
 var html='<strong>Score: '+score+' / 4</strong><ul>'+parts.map(function(p){return '<li>'+(p[1]?'✓ ':'✗ ')+p[0]+(p[1]?'': ' — '+p[2])+'</li>';}).join('')+'</ul>';
 if(score===4)html+='All four parts are present. That does not guarantee a good result, but it matches the shape of your strongest prompts.';
 document.getElementById('healthResult').innerHTML=html;}
-renderMy();
+var ledgerSeed={
+ 'Research':{origin:'Your real questions Oct 22-26, 2026, for example GitHub Universe and Muse plan questions',prevents:'Treating an estimate or a web snippet as a verified fact when a decision depends on it'},
+ 'Shopping':{origin:'Your jacket hunt, Oct 24, 2026, which ended in the HMM532 purchase',prevents:'Buying the wrong size, or a perforated jacket for riding in the 60s'},
+ 'Build an app':{origin:'Glitch Studio, Ride Check, and the other apps, Oct 25-26, 2026',prevents:'Calling an app done without checking the live link, and merging apps you decided to keep separate'},
+ 'Social post':{origin:'Your Instagram and Threads posting, Oct 25-26, 2026',prevents:'The Oct 26 problem: 2 Threads comments removed as spam, and posting to Instagram while it showed a suspension page'},
+ 'Recurring job':{origin:'Your daily trend check, app-improvement check, and weekly Threads check, Oct 25-26, 2026',prevents:'A scheduled job quietly re-enabling the old bulk-comment method, or inventing work on a quiet day'}
+};
+var ledgerStored={};try{ledgerStored=JSON.parse(localStorage.getItem('pp-ledger')||'{}');}catch(e){ledgerStored={};}
+function renderLedger(){var el=document.getElementById('ledger');el.innerHTML=Object.keys(ledgerSeed).map(function(name){var s=ledgerStored[name]||{count:0,verdict:'Not yet proven in the app',date:''};return '<div class="ledger-row"><strong>'+esc(name)+'</strong><br><span class="note">Came from: '+esc(ledgerSeed[name].origin)+'</span><br><span class="note">Prevents: '+esc(ledgerSeed[name].prevents)+'</span><br><span class="note">Reuses in this app: '+s.count+' — Last verdict: '+esc(s.verdict)+(s.date?' ('+esc(s.date)+')':'')+'</span><br><button onclick="logUse(\''+name.replace(/'/g,"\\'")+'\',\'Worked, reuse as-is\')" style="background:#2a2f45">Log: worked</button><button onclick="logUse(\''+name.replace(/'/g,"\\'")+'\',\'Drifted, tightened the stop rule\')" style="background:#2a2f45">Log: drifted</button></div>';}).join('');}
+function logUse(name,verdict){var cur=ledgerStored[name]||{count:0,verdict:'Not yet proven in the app',date:''};cur.count+=1;cur.verdict=verdict;cur.date=new Date().toISOString().slice(0,10);ledgerStored[name]=cur;localStorage.setItem('pp-ledger',JSON.stringify(ledgerStored));renderLedger();}
+renderMy();renderLedger();
 </script>
 </body>
 </html>
