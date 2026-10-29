@@ -107,7 +107,6 @@ var selectedTier=2;
 function selectTier(n){selectedTier=n;[1,2,3,4].forEach(function(i){document.getElementById('tierBtn'+i).className=i===n?'secondary selected':'secondary';});}
 function categoryFor(idea){
   var s=idea.toLowerCase();
-  if(/buy|purchase|shop|price|gift|jacket|phone|laptop|shoes|car|find a|choose a/.test(s))return 'shopping';
   if(/instagram|threads|social|caption|reel|post about/.test(s))return 'social';
   if(/app|website|build a tool|program|code a/.test(s))return 'app';
   if(/every day|daily|weekly|remind|routine|habit|check.*every/.test(s))return 'recurring';
@@ -115,7 +114,6 @@ function categoryFor(idea){
   if(/plan|trip|party|birthday|vacation|itinerary|wedding/.test(s))return 'planning';
   if(/cook|recipe|fridge|meal|dinner|bake|ingredient/.test(s))return 'cooking';
   if(/study|exam|test|homework|learn/.test(s))return 'study';
-  if(/compare|decide|research|which is better|pros and cons|what is/.test(s))return 'research';
   return 'general';
 }
 function buildPrompt(idea,cat,tier){
@@ -123,7 +121,6 @@ function buildPrompt(idea,cat,tier){
   var stop=pick(['Do not guess or invent facts. If you do not know, say so.','Do not add extra costs or steps I did not ask for.','Do not post, send, buy, or book anything without my yes.']);
   if(tier===1){return 'Goal: help me '+idea+'.';}
   var base={
-    shopping:'Goal: help me '+idea+'.\nLimits: stay within a budget I can afford, and only suggest things that actually fit what I need. Tell me the size, price, and what is included.\nCheck: '+check+'\nStop: '+stop+'\nOutput: a short list I can choose from, with the best option first and why it wins.',
     social:'Goal: help me '+idea+'.\nLimits: keep it clear, short, and in a normal human voice. No filler words, no hype, and be decisive, not unsure.\nCheck: '+check+'\nStop: '+stop+'\nOutput: one finished post I can copy and paste, nothing else to fix.',
     app:'Goal: help me '+idea+'.\nLimits: keep it simple, work on a phone, no signup, and no extra features I did not ask for.\nCheck: show me how it works before you call it done, and test it on a small phone screen.\nStop: '+stop+'\nOutput: a working version I can try right away, plus one line on what to test first.',
     cooking:'Goal: help me '+idea+'.\nLimits: use only what I actually have, unless I say to suggest shopping. Keep it simple and practical.\nCheck: '+check+'\nStop: do not invent ingredients I do not have, and do not add steps I did not ask for.\nOutput: a simple recipe in order, with what to use and how long each step takes.',
@@ -131,7 +128,6 @@ function buildPrompt(idea,cat,tier){
     writing:'Goal: help me '+idea+'.\nLimits: keep it polite, clear, and short. Use plain words, short sentences, and one clear ask at the end.\nCheck: '+check+'\nStop: '+stop+'\nOutput: one finished draft I can copy and paste.',
     planning:'Goal: help me '+idea+'.\nLimits: keep it realistic for time, money, and who is involved. No impossible schedules.\nCheck: '+check+'\nStop: '+stop+'\nOutput: a simple step-by-step plan, in order, with what to do first.',
     study:'Goal: help me '+idea+'.\nLimits: explain it in plain words first, then add detail only where I need it. Use examples, not jargon.\nCheck: '+check+'\nStop: '+stop+'\nOutput: a short explanation, then 3 practice questions with answers.',
-    research:'Goal: help me '+idea+'.\nLimits: use reliable sources, prefer recent information, and leave out hype.\nCheck: cite your sources, separate facts you verified from estimates, and say what is still uncertain.\nStop: '+stop+'\nOutput: a clear answer first, then the reasons and sources behind it.',
     general:'Goal: help me '+idea+'.\nLimits: keep it clear and practical, and only use information that fits what I asked for.\nCheck: '+check+'\nStop: '+stop+'\nOutput: a clear answer I can act on, in simple steps.'
   };
   var p=base[cat]||base.general;
