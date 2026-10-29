@@ -149,8 +149,9 @@ function checkFor(text){
   var missing=parts.filter(function(p){return !p[1];}).map(function(p){return p[0];});
   return {parts:parts,missing:missing};
 }
-var currentFull='',currentShort='',showingShort=false,currentTier=2;
-function showResult(idea,tier,cat,noPush){
+var currentFull='',currentShort='',showingShort=false,currentTier=2,lastCat='';
+function showResult(idea,tier,cat,noPush,noScroll){
+  lastCat=cat||'';
   var info=tierInfo(tier);var s=checkFor(currentFull);
   document.getElementById('resultCard').style.display='';
   document.getElementById('result').value=currentFull;
@@ -161,10 +162,22 @@ function showResult(idea,tier,cat,noPush){
   if(!noPush){pushRecent({text:currentFull,tier:tier,cat:cat||'',idea:idea});}
   document.getElementById('whyLine').textContent='This prompt is about: '+idea+'.';
   var covered=s.parts.filter(function(p){return p[1];}).map(function(p){return p[0];});
-  document.getElementById('checkLine').textContent='Prompt check: '+covered.join(', ')+' covered'+(s.missing.length?' — not yet added: '+s.missing.join(', ')+'.':'')+'.';
+  document.getElementById('checkLine').textContent='Prompt check: '+covered.join(', ')+' covered'+(s.missing.length?'. Not yet added: '+s.missing.join(', ')+'.':'')+'.';
   document.getElementById('tierLine').textContent=info.name+'. '+info.why+' Parts covered: '+s.parts.map(function(p){return (p[1]?'✓ ':'○ ')+p[0];}).join(', ')+'.';
   document.getElementById('liftLine').textContent=info.lift;
-  document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});
+  if(!noScroll){document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});}
+  saveCurrent();
+}
+function saveCurrent(){
+  try{localStorage.setItem('pp-current',JSON.stringify({text:document.getElementById('result').value,idea:document.getElementById('idea').value,tier:currentTier,cat:lastCat}));}catch(e){}
+}
+function restoreCurrent(){
+  var c=null;try{c=JSON.parse(localStorage.getItem('pp-current')||'null');}catch(e){}
+  if(!c||!c.text)return;
+  currentFull=c.text;baseFull=c.text;currentTier=c.tier||2;currentShort=shortFor(currentFull);showingShort=false;
+  selectTier(currentTier);
+  if(c.idea)document.getElementById('idea').value=c.idea;
+  showResult(c.idea||'',currentTier,c.cat||'',true,true);
 }
 function shortFor(text){return shortForBetter(text);}
 var recent=JSON.parse(localStorage.getItem('pp-recent')||'[]');
@@ -175,9 +188,9 @@ function pushRecent(item){
 }
 function renderRecent(){
   var el=document.getElementById('recentList');if(!el)return;
-  el.innerHTML=recent.map(function(r,i){return '<li>'+r.text.replace(/</g,'&lt;').slice(0,80)+'... <button class="secondary" onclick="loadRecent('+i+')">Use this</button> <button class="secondary" onclick="delRecent('+i+')">Delete</button></li>';}).join('')||'<li class="note">No recent prompts yet.</li>';
+  el.innerHTML=recent.map(function(r,i){return '<li>'+r.text.replace(/</g,'&lt;').slice(0,80)+'... <button class="secondary" onclick="loadRecent('+i+')">Use this</button> <button class="secondary" onclick="delRecent('+i+')">Delete</button></li>';}).join('')||'<li class="note">No recent prompts yet. Make one above and it will land here.</li>';
 }
-function delRecent(i){recent.splice(i,1);localStorage.setItem('pp-recent',JSON.stringify(recent));renderRecent();}
+function delRecent(i){if(!confirm('Delete this recent prompt?'))return;recent.splice(i,1);localStorage.setItem('pp-recent',JSON.stringify(recent));renderRecent();}
 function loadRecent(i){
   var r=recent[i];if(!r)return;
   currentFull=r.text;baseFull=currentFull;currentTier=r.tier;
@@ -209,10 +222,16 @@ function useExample(tier){
   currentShort=shortFor(currentFull);showingShort=false;
   showResult('the Tier '+tier+' example',tier,'');
 }
-function copyResult(){navigator.clipboard.writeText(document.getElementById('result').value).then(function(){document.getElementById('copyNote').textContent='Copied! Paste it into any AI chat.';});}
+function copyText(t,okMsg,noteEl){
+  function done(){document.getElementById(noteEl).textContent=okMsg;}
+  function fail(){document.getElementById(noteEl).textContent='Copy did not work here. Long-press the text to copy it by hand.';}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,fail);}
+  else{var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){fail();}document.body.removeChild(ta);}
+}
+function copyResult(){copyText(document.getElementById('result').value,'Copied! Paste it into any AI chat.','copyNote');}
 function updateCheckFromResult(){
   var s=checkFor(document.getElementById('result').value);
-  document.getElementById('checkLine').textContent='Prompt check: '+s.parts.filter(function(p){return p[1];}).map(function(p){return p[0];}).join(', ')+' covered'+(s.missing.length?' — not yet added: '+s.missing.join(', ')+'.':'')+'.';
+  document.getElementById('checkLine').textContent='Prompt check: '+s.parts.filter(function(p){return p[1];}).map(function(p){return p[0];}).join(', ')+' covered'+(s.missing.length?'. Not yet added: '+s.missing.join(', ')+'.':'')+'.';
 }
 var baseFull='';
 function shortForBetter(text){
@@ -248,15 +267,16 @@ function makeLonger(){
 var my=JSON.parse(localStorage.getItem('pp-my')||'[]');
 function renderMy(){document.getElementById('mylist').innerHTML=my.map(function(p,i){return '<li>'+p.replace(/</g,'&lt;')+' <button class="secondary" onclick="copySaved('+i+')">Copy</button> <button class="secondary" onclick="delMy('+i+')">Delete</button></li>';}).join('')||'<li class="note">No saved prompts yet. Make one above and tap Save this prompt.</li>';}
 function saveResult(){var t=document.getElementById('result').value;if(!t||my.indexOf(t)!==-1)return;my.unshift(t);localStorage.setItem('pp-my',JSON.stringify(my));renderMy();document.getElementById('saveNote').textContent='Saved! Scroll down to Your saved prompts to find it.';}
-function copySaved(i){navigator.clipboard.writeText(my[i]).then(function(){document.getElementById('savedCopyNote').textContent='Copied!';});}
-function delMy(i){my.splice(i,1);localStorage.setItem('pp-my',JSON.stringify(my));renderMy();}
+function copySaved(i){copyText(my[i],'Copied!','savedCopyNote');}
+function delMy(i){if(!confirm('Delete this saved prompt?'))return;my.splice(i,1);localStorage.setItem('pp-my',JSON.stringify(my));renderMy();}
 function exportMy(){var data={app:'prompt-playbook',version:1,exported:new Date().toISOString(),myPrompts:my};var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='prompt-playbook-my-prompts.json';a.click();URL.revokeObjectURL(a.href);}
 function importMy(ev){var f=ev.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var d=JSON.parse(r.result);var list=Array.isArray(d)?d:d.myPrompts;if(!Array.isArray(list))throw new Error('bad file');var added=0;list.forEach(function(p){if(typeof p==='string'&&p.trim()&&my.indexOf(p)===-1){my.push(p);added++;}});localStorage.setItem('pp-my',JSON.stringify(my));renderMy();alert('Imported '+added+' new prompt(s).');}catch(e){alert('That file could not be imported. It needs to be a Prompt Playbook export, a JSON list of prompts.');}ev.target.value='';};r.readAsText(f);}
 document.getElementById('result').addEventListener('input',function(){
   baseFull=this.value;
+  saveCurrent();
   var s=checkFor(this.value);
-  document.getElementById('checkLine').textContent='Prompt check: '+s.parts.filter(function(p){return p[1];}).map(function(p){return p[0];}).join(', ')+' covered'+(s.missing.length?' — not yet added: '+s.missing.join(', ')+'.':'')+'.';
+  document.getElementById('checkLine').textContent='Prompt check: '+s.parts.filter(function(p){return p[1];}).map(function(p){return p[0];}).join(', ')+' covered'+(s.missing.length?'. Not yet added: '+s.missing.join(', ')+'.':'')+'.';
 });
-renderMy();renderRecent();
+renderMy();renderRecent();restoreCurrent();
 </script>
 </body></html>
