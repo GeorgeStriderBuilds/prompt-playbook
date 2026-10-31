@@ -3,6 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+/* ?view=desktop preview: force desktop theme on narrow screens */
+try {
+  if (new URLSearchParams(location.search).get("view") === "desktop") {
+    document.querySelector('meta[name="viewport"]').setAttribute("content", "width=1280");
+  }
+} catch (e) {}
+</script>
 <title>Prompt Playbook</title>
 <style>
 body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#04070d;color:#e6fbff;margin:0;padding:20px;background-image:linear-gradient(rgba(0,240,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.07) 1px,transparent 1px),radial-gradient(ellipse at 20% 0%,rgba(0,240,255,.18),transparent 55%),radial-gradient(ellipse at 90% 20%,rgba(255,0,128,.14),transparent 50%);background-size:44px 44px,44px 44px,auto,auto;background-attachment:fixed}
@@ -24,6 +32,39 @@ ul{line-height:1.6;padding-left:20px}
 .tiercard{border:1px solid rgba(0,240,255,.3);border-radius:12px;padding:12px;margin:10px 0;background:#020b14}
 .tiercard p{margin:4px 0;line-height:1.5;color:#e6fbff}
 .tiercard .note{color:#9fd8e2}
+@media (min-width:1024px){
+/* Desktop: centered wide shell, cards span in a 2-column grid */
+main{max-width:1100px;padding:0 32px;box-sizing:border-box;display:grid;grid-template-columns:1fr 1fr;column-gap:16px;align-items:start}
+h1{grid-column:1/-1;font-size:36px}
+p.sub{grid-column:1/-1;max-width:72ch}
+/* Card 1: tiers explainer, full width, tier cards in a 2-column grid */
+main>.card:nth-of-type(1){grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+main>.card:nth-of-type(1)>h2,main>.card:nth-of-type(1)>p.note{grid-column:1/-1}
+main>.card:nth-of-type(1)>.tiercard{margin:0;display:flex;flex-direction:column}
+main>.card:nth-of-type(1)>.tiercard>button{margin-top:auto}
+/* Card 2: builder (left) + Card 3: result (right) side by side */
+main>.card:nth-of-type(2){grid-column:1}
+main>.card:nth-of-type(3){grid-column:2;margin-top:0}
+/* Card 4: saved prompts, full width, list in two columns */
+main>.card:nth-of-type(4){grid-column:1/-1}
+main>.card:nth-of-type(4)>ul{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px}
+/* Final footer note spans both columns */
+main>p.note{grid-column:1/-1}
+/* Buttons get a hover state for mouse parity with the active scale tap */
+button:hover{filter:brightness(1.12)}
+button:focus-visible{outline:3px solid #facc15;outline-offset:2px}
+#chips{display:flex;flex-wrap:wrap;gap:4px}
+#chips .chip{margin-right:0}
+#tierBtns{display:flex;flex-wrap:wrap;gap:4px}
+#tierBtns button{margin-right:0}
+textarea{max-width:100%}
+}
+@media (min-width:1440px){
+main{max-width:1240px}
+/* Tier cards in one row of four on very wide screens */
+main>.card:nth-of-type(1){grid-template-columns:repeat(4,1fr)}
+h1{font-size:40px}
+}
 </style>
 </head>
 <body><main>
